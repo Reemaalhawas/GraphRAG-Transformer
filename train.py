@@ -11,8 +11,8 @@ from stark_qa import load_qa
 from torch import Tensor
 from torch.nn.utils import clip_grad_norm_
 from torch_geometric import seed_everything
-from torch_geometric.nn import GAT, GRetriever
-from torch_geometric.nn.nlp import LLM
+from torch_geometric.nn import GAT
+
 from tqdm import tqdm
 
 from compute_metrics import compute_metrics
@@ -255,6 +255,7 @@ def train(
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
+
     parser.add_argument('--gnn_hidden_channels', type=int, default=1536)
     parser.add_argument('--num_gnn_layers', type=int, default=4)
     parser.add_argument('--lr', type=float, default=1e-5)
@@ -262,12 +263,34 @@ if __name__ == '__main__':
     parser.add_argument('--batch_size', type=int, default=4)
     parser.add_argument('--eval_batch_size', type=int, default=16)
     parser.add_argument('--checkpointing', action='store_true')
+
     parser.add_argument('--llama_version', type=str, required=True)
     parser.add_argument('--retrieval_config_version', type=int, required=True)
     parser.add_argument('--algo_config_version', type=int, required=True)
     parser.add_argument('--g_retriever_config_version', type=int, required=True)
+
     parser.add_argument('--freeze_llm', type=bool, default=False)
+
+    # ✅ ADD THESE TWO
+    parser.add_argument(
+        '--sys_prompt',
+        type=str,
+        default="",
+        help='Optional system prompt for the LLM'
+    )
+
+    parser.add_argument(
+        '--num_gpus',
+        type=int,
+        default=1,
+        help='Number of GPUs to use'
+    )
+
     args = parser.parse_args()
+
+
+
+
     load_dotenv('db.env', override=True)
 
     start_time = time.time()
